@@ -1,6 +1,7 @@
-1;Intel;Processador i7;800.0;false
-2;AMD;HD;750.0;false
+1;Intel;Processador;800.0;false
+2;AMD;HD;750.0;true
 3;AMD;HD;850.0;false
 4;Samsung;SSD;500.0;false
 5;Kingston;SSD;570.0;false
-6;Intel;SSD;400.0;false
+6;Intel;SSD;400.0;true
+7;AMD;Processador;700.0;true

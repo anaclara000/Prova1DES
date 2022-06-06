@@ -1,11 +1,13 @@
 package viewers;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Locale;
 
@@ -29,13 +31,16 @@ public class OrcamentoForm extends JFrame{
 	
 	private static final long serialVersionUID = 1L;
 	private JPanel painel;
-	private JLabel id, fornecedor, produto, preco;
+	private JLabel text ,Lfiltro, id, fornecedor, produto, preco, lbfundo;
 	private JComboBox cbproduto;
-	private JTextField tfid, tffornecedor, tfpreco;
+	private JTextField tffiltro, tfid, tffornecedor, tfpreco;
 	private DefaultTableModel tableModel;
-	private JButton create, read, update, delete;
+	private JButton filtro, create, read, update, delete;
 	private JTable table;
 	private JScrollPane rolagem;
+	private String imgIco = ".\\assets\\icon.png";
+	private String [] fundo = {".\\assets\\fundo.png"};
+	private ImageIcon icon;
 	
 	private int autoId = OrcamentoProcess.orcamentos.get(OrcamentoProcess.orcamentos.size() - 1).getId() + 1;
 	private DecimalFormat df = new DecimalFormat("#.00");
@@ -46,34 +51,62 @@ public class OrcamentoForm extends JFrame{
 		setBounds(100, 100, 610, 390);
 		painel = new JPanel();
 		setContentPane(painel);
+		setIconImage(new ImageIcon(imgIco).getImage());
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(null);
 		
+		text = new JLabel("Consulta de orçamentos");
+		text.setBounds(170, 5, 400, 30);
+		text.setFont(new Font("OpenSans",Font.CENTER_BASELINE,20));
+		text.setForeground(new Color(180,112,54));
+		painel.add(text);
+		
 		id = new JLabel("ID:");
-		id.setBounds(20, 25, 120, 30);
+		id.setBounds(20, 35, 120, 30);
+		id.setFont(new Font("OpenSans",Font.LAYOUT_LEFT_TO_RIGHT,13));
 		tfid = new JTextField(String.format("%d", autoId));
 		tfid.setEditable(false);
 		tfid.setEditable(false);
-		tfid.setBounds(40, 25, 40, 30);
+		tfid.setBounds(40, 35, 40, 30);
 		tfid.setBackground(new Color(215, 215, 215));
 		
-		fornecedor = new JLabel("fornecedor:");
-		fornecedor.setBounds(100, 25, 140, 30);
+		fornecedor = new JLabel("Fornecedor:");
+		fornecedor.setBounds(20, 70, 120, 30);
 		tffornecedor = new JTextField();
-		tffornecedor.setBounds(235, 25, 150, 30);
+		fornecedor.setFont(new Font("OpenSans",Font.LAYOUT_LEFT_TO_RIGHT,13));
+		tffornecedor.setBounds(80, 70, 120, 30);
 		tffornecedor.setBackground(new Color(215, 215, 215));
 		
 		produto = new JLabel("Produto:");
-		produto.setBounds(20, 70, 120, 30);
+		produto.setBounds(20, 105, 120, 30);
+		produto.setFont(new Font("OpenSans",Font.LAYOUT_LEFT_TO_RIGHT,13));
 		cbproduto = new JComboBox<String>(new String[] {"SSD", "HD", "Placa mãe" , "Processador", "Placa de video"});
-		cbproduto.setBounds(100, 70, 100, 30);
+		cbproduto.setFont(new Font("OpenSans",Font.LAYOUT_LEFT_TO_RIGHT,13));
+		cbproduto.setBounds(80, 105, 100, 30);
 		cbproduto.setBackground(new Color(215, 215, 215));
-		
+//		
 		preco = new JLabel("Preço:");
-		preco.setBounds(215, 70, 80, 30);
+		preco.setBounds(20, 140, 80, 30);
+		preco.setFont(new Font("OpenSans",Font.LAYOUT_LEFT_TO_RIGHT,13));
 		tfpreco = new JTextField();
-		tfpreco.setBounds(290, 70, 80, 30);
+		tfpreco.setBounds(80, 140, 90, 30);
 		tfpreco.setBackground(new Color(215, 215, 215));
+		
+		lbfundo = new JLabel("");
+		lbfundo.setBounds(420, 10, 150, 100);
+		fundo(0);
+		painel.add(lbfundo);
+		
+//		Lfiltro = new JLabel("Produto:");
+//		tffiltro = new JTextField();
+//		filtro = new JButton("Filtrar");
+//		Lfiltro.setBounds(20, 340, 300, 15);
+//		tffiltro.setBounds(20, 310, 100, 20);
+//		Lfiltro.setBounds(115, 310, 100, 20);
+//		filtro.setBounds(305, 310, 100, 30);
+//		painel.add(Lfiltro);
+//		painel.add(tffiltro);
+//		painel.add(filtro);
 		
 		painel.add(id);
 		painel.add(tfid);
@@ -99,25 +132,24 @@ public class OrcamentoForm extends JFrame{
 		table = new JTable(tableModel);
 		table.setEnabled(false);
 		rolagem = new JScrollPane(table);
-		rolagem.setBounds(20, 170, 550, 130);
+		rolagem.setBounds(20, 200, 550, 130);
 		painel.add(rolagem);
 		
 		create = new JButton("Cadastrar");
-		create.setBounds(60, 120, 110, 30);
-		create.setBackground(new Color(189,236,182));
+		create.setBounds(60, 180, 110, 30);
 		painel.add(create);
 
 		read = new JButton("Buscar");
-		read.setBounds(180, 120, 110, 30);
+		read.setBounds(180, 180, 110, 30);
 		painel.add(read);
 
 		update = new JButton("Alterar");
-		update.setBounds(300, 120, 110, 30);
+		update.setBounds(300, 180, 110, 30);
 		update.setEnabled(false);
 		painel.add(update);
 
 		delete = new JButton("Excluir");
-		delete.setBounds(420, 120, 110, 30);
+		delete.setBounds(420, 180, 110, 30);
 
 		delete.setEnabled(false);
 		painel.add(delete);
@@ -147,6 +179,13 @@ public class OrcamentoForm extends JFrame{
         	}
         });
 		
+//		filtro.addActionListener((ActionListener) new ActionListener() {
+//        	@Override
+//        	public void actionPerformed(ActionEvent e) {
+//        		filtrarProdutos(filtro);
+//        	}
+//        });
+//		
 	}
 	
 	int obterEquipamento(String equipamento) {
@@ -166,6 +205,10 @@ public class OrcamentoForm extends JFrame{
 		}
 	}
 	
+	private void fundo (int indice) {
+		icon = new ImageIcon(new ImageIcon(fundo[indice]).getImage().getScaledInstance(110, 110, 50));
+		lbfundo.setIcon(icon);
+	}
 
 	private void cadastrar() {
 	if(tfid.getText().length() != 0 && tffornecedor.getText().length() != 0 && tfpreco.getText().length() != 0) {
@@ -277,9 +320,9 @@ public class OrcamentoForm extends JFrame{
 		}
 		for (Orcamento o : OrcamentoProcess.orcamentos) {
 			if (o.isMaisBarato()) {
-				tableModel.addRow(new String[] { String.format("%d", o.getId()), o.getFornecedor(), o.getProduto(),String.format("%.2f", o.getPreco()), "Barato"});
+				tableModel.addRow(new String[] { String.format("%d", o.getId()), o.getFornecedor(), o.getProduto(),String.format("%.2f", o.getPreco()), "Mais barato"});
 			} else {
-				tableModel.addRow(new String[] { String.format("%d", o.getId()), o.getFornecedor(), o.getProduto(),String.format("%.2f", o.getPreco()), "Caro"});
+				tableModel.addRow(new String[] { String.format("%d", o.getId()), o.getFornecedor(), o.getProduto(),String.format("%.2f", o.getPreco()), "-"});
 			}
 			
 		}
@@ -315,7 +358,26 @@ public class OrcamentoForm extends JFrame{
 			comparar();
 		}
 	}
-		
+
+	
+//	private ArrayList<Orcamento> filtrarProdutos(String filtro) {
+//		ArrayList<Orcamento> orcamentos = new ArrayList<>();
+//		if (filtro.equals("")) {
+//			return OrcamentoProcess.orcamentos;
+//		} else {
+//			if (filtro.length() > 0)
+//				for (Orcamento o : OrcamentoProcess.orcamentos) {
+//					if (filtro.contains(String.format("%d", o.getId()))
+//							|| o.getFornecedor().toUpperCase().contains(filtro.toUpperCase())
+//							|| o.getProduto().toUpperCase().contains(filtro.toUpperCase())
+//							|| filtro.contains(String.format("%d", o.getPreco())))
+//						orcamentos.add(o);
+//				}
+//		}
+//		return orcamentos;
+//	}
+
+	
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == create) {
 				cadastrar();
@@ -329,6 +391,9 @@ public class OrcamentoForm extends JFrame{
 			if (e.getSource() == delete) {
 				excluir();
 			}
+//			if (e.getSource() == filtro) {
+//				filtrarProdutos();
+//			}
 		}
 		
 		

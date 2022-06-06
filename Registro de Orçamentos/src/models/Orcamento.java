@@ -7,6 +7,7 @@ import java.util.Currency;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Vector;
 
 import viewers.OrcamentoForm;
 
@@ -113,6 +114,10 @@ public class Orcamento {
 	
 	public String toCSV() {
 		return  + id + ";" + fornecedor + ";" + produto + ";" + preco + ";" + maisBarato +  "\r\n";
+	}
+
+	public String[] toVetor() {
+		return new String[] { id + "\t" + fornecedor + "\t" + produto + "\t" + preco + "\t"  + maisBarato + "\n"};
 	}
 
 }
