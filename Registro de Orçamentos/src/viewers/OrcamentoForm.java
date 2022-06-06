@@ -48,7 +48,7 @@ public class OrcamentoForm extends JFrame{
 	
 	OrcamentoForm(){
 		setTitle("Regitro de Orçamento");
-		setBounds(100, 100, 610, 390);
+		setBounds(100, 100, 610, 410);
 		painel = new JPanel();
 		setContentPane(painel);
 		setIconImage(new ImageIcon(imgIco).getImage());
@@ -58,7 +58,7 @@ public class OrcamentoForm extends JFrame{
 		text = new JLabel("Consulta de orçamentos");
 		text.setBounds(170, 5, 400, 30);
 		text.setFont(new Font("OpenSans",Font.CENTER_BASELINE,20));
-		text.setForeground(new Color(180,112,54));
+		text.setForeground(new Color(0,0,0));
 		painel.add(text);
 		
 		id = new JLabel("ID:");
@@ -67,14 +67,14 @@ public class OrcamentoForm extends JFrame{
 		tfid = new JTextField(String.format("%d", autoId));
 		tfid.setEditable(false);
 		tfid.setEditable(false);
-		tfid.setBounds(40, 35, 40, 30);
+		tfid.setBounds(50, 35, 250, 30);
 		tfid.setBackground(new Color(215, 215, 215));
 		
 		fornecedor = new JLabel("Fornecedor:");
 		fornecedor.setBounds(20, 70, 120, 30);
 		tffornecedor = new JTextField();
 		fornecedor.setFont(new Font("OpenSans",Font.LAYOUT_LEFT_TO_RIGHT,13));
-		tffornecedor.setBounds(80, 70, 120, 30);
+		tffornecedor.setBounds(100, 70, 200, 30);
 		tffornecedor.setBackground(new Color(215, 215, 215));
 		
 		produto = new JLabel("Produto:");
@@ -82,18 +82,18 @@ public class OrcamentoForm extends JFrame{
 		produto.setFont(new Font("OpenSans",Font.LAYOUT_LEFT_TO_RIGHT,13));
 		cbproduto = new JComboBox<String>(new String[] {"SSD", "HD", "Placa mãe" , "Processador", "Placa de video"});
 		cbproduto.setFont(new Font("OpenSans",Font.LAYOUT_LEFT_TO_RIGHT,13));
-		cbproduto.setBounds(80, 105, 100, 30);
+		cbproduto.setBounds(80, 105, 220, 30);
 		cbproduto.setBackground(new Color(215, 215, 215));
 //		
 		preco = new JLabel("Preço:");
 		preco.setBounds(20, 140, 80, 30);
 		preco.setFont(new Font("OpenSans",Font.LAYOUT_LEFT_TO_RIGHT,13));
 		tfpreco = new JTextField();
-		tfpreco.setBounds(80, 140, 90, 30);
+		tfpreco.setBounds(80, 140, 220, 30);
 		tfpreco.setBackground(new Color(215, 215, 215));
 		
 		lbfundo = new JLabel("");
-		lbfundo.setBounds(420, 10, 150, 100);
+		lbfundo.setBounds(380, 15, 150, 170);
 		fundo(0);
 		painel.add(lbfundo);
 		
@@ -132,7 +132,7 @@ public class OrcamentoForm extends JFrame{
 		table = new JTable(tableModel);
 		table.setEnabled(false);
 		rolagem = new JScrollPane(table);
-		rolagem.setBounds(20, 200, 550, 130);
+		rolagem.setBounds(20, 220, 550, 130);
 		painel.add(rolagem);
 		
 		create = new JButton("Cadastrar");
@@ -206,7 +206,7 @@ public class OrcamentoForm extends JFrame{
 	}
 	
 	private void fundo (int indice) {
-		icon = new ImageIcon(new ImageIcon(fundo[indice]).getImage().getScaledInstance(110, 110, 50));
+		icon = new ImageIcon(new ImageIcon(fundo[indice]).getImage().getScaledInstance(160, 160, 50));
 		lbfundo.setIcon(icon);
 	}
 
