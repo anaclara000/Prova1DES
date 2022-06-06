@@ -37,7 +37,7 @@ public class OrcamentoForm extends JFrame{
 	private JTable table;
 	private JScrollPane rolagem;
 	
-	private int autoId = OrcamentoProcess.orcamento.get(OrcamentoProcess.orcamento.size() - 1).getId() + 1;
+	private int autoId = OrcamentoProcess.orcamentos.get(OrcamentoProcess.orcamentos.size() - 1).getId() + 1;
 	private DecimalFormat df = new DecimalFormat("#.00");
 	private final Locale BRASIL = new Locale("pt", "BR");
 	
@@ -93,7 +93,7 @@ public class OrcamentoForm extends JFrame{
 		tableModel.addColumn("Status");
 		
 		
-		if (OrcamentoProcess.orcamento.size() != 1) {
+		if (OrcamentoProcess.orcamentos.size() != 1) {
 			preencherTabela();
 		}
 		table = new JTable(tableModel);
@@ -179,12 +179,13 @@ public class OrcamentoForm extends JFrame{
 			preco = 0;
 		}
 
-		OrcamentoProcess.orcamento.add(new Orcamento(autoId,  tffornecedor.getText(),
-				cbproduto.getSelectedItem().toString(), preco));
-		autoId = OrcamentoProcess.orcamento.get(OrcamentoProcess.orcamento.size() - 1).getId() + 1;
+		OrcamentoProcess.orcamentos.add(new Orcamento(autoId,  tffornecedor.getText(),
+				cbproduto.getSelectedItem().toString(), preco, false));
+		autoId = OrcamentoProcess.orcamentos.get(OrcamentoProcess.orcamentos.size() - 1).getId() + 1;
 		preencherTabela();
 		limparCampos();
 		OrcamentoProcess.salvar();
+		comparar();
 		
 	}else {
 		JOptionPane.showMessageDialog(this, "Favor preencher todos os campos.");
@@ -196,13 +197,13 @@ public class OrcamentoForm extends JFrame{
 		try {
 			int id = Integer.parseInt(text);
 			
-			for (Orcamento o : OrcamentoProcess.orcamento) {
+			for (Orcamento o : OrcamentoProcess.orcamentos) {
 				if (o.getId() == id) {
-					int indice = OrcamentoProcess.orcamento.indexOf(o);
-			tfid.setText(String.format("%d", OrcamentoProcess.orcamento.get(indice).getId()));
-			tffornecedor.setText(OrcamentoProcess.orcamento.get(indice).getFornecedor());
-			cbproduto.setSelectedIndex(obterEquipamento(OrcamentoProcess.orcamento.get(indice).getProduto()));
-			tfpreco.setText((String.format("%.2f" , OrcamentoProcess.orcamento.get(indice).getPreco())));
+					int indice = OrcamentoProcess.orcamentos.indexOf(o);
+			tfid.setText(String.format("%d", OrcamentoProcess.orcamentos.get(indice).getId()));
+			tffornecedor.setText(OrcamentoProcess.orcamentos.get(indice).getFornecedor());
+			cbproduto.setSelectedIndex(obterEquipamento(OrcamentoProcess.orcamentos.get(indice).getProduto()));
+			tfpreco.setText((String.format("%.2f" , OrcamentoProcess.orcamentos.get(indice).getPreco())));
 			
 			create.setEnabled(false);
 			update.setEnabled(true);
@@ -219,10 +220,10 @@ public class OrcamentoForm extends JFrame{
 	private void alterar() {
 		int id = Integer.parseInt(tfid.getText());
 		Orcamento o = new Orcamento(id);
-		int indice = OrcamentoProcess.orcamento.indexOf(o);
+		int indice = OrcamentoProcess.orcamentos.indexOf(o);
 		if (tfid.getText().length() != 0 && tffornecedor.getText().length() != 0 &&  tfpreco.getText().length() != 0)  {
-			Orcamento tempOrca = new Orcamento(Integer.parseInt(tfid.getText()), tffornecedor.getText(), cbproduto.getSelectedItem().toString(),(Double.parseDouble(tfpreco.getText().replace(",", "."))));
-			for (Orcamento o1 : OrcamentoProcess.orcamento) {
+			Orcamento tempOrca = new Orcamento(Integer.parseInt(tfid.getText()), tffornecedor.getText(), cbproduto.getSelectedItem().toString(),(Double.parseDouble(tfpreco.getText().replace(",", "."))), false);
+			for (Orcamento o1 : OrcamentoProcess.orcamentos) {
 				if (o1.getId() == tempOrca.getId()) {
 					o1.setId(tempOrca.getId());
 					o1.setFornecedor(tempOrca.getFornecedor());
@@ -249,6 +250,7 @@ public class OrcamentoForm extends JFrame{
 				delete.setEnabled(false);
 				tfid.setText(String.format("%d", autoId));
 				OrcamentoProcess.salvar();
+				comparar();
 			
 		} else {
 			JOptionPane.showMessageDialog(this, "Favor Preencher todas as informações");
@@ -270,21 +272,38 @@ public class OrcamentoForm extends JFrame{
 				tableModel.removeRow(0);
 			}
 		}
-		for (Orcamento o : OrcamentoProcess.orcamento) {
-			tableModel.addRow(new String[] { String.format("%d", o.getId()), o.getFornecedor(), o.getProduto(),String.format("%.2f", o.getPreco())});
+		for (Orcamento o : OrcamentoProcess.orcamentos) {
+			OrcamentoProcess.calculo(o.getProduto());
+		}
+		for (Orcamento o : OrcamentoProcess.orcamentos) {
+			if (o.isMaisBarato()) {
+				tableModel.addRow(new String[] { String.format("%d", o.getId()), o.getFornecedor(), o.getProduto(),String.format("%.2f", o.getPreco()), "Barato"});
+			} else {
+				tableModel.addRow(new String[] { String.format("%d", o.getId()), o.getFornecedor(), o.getProduto(),String.format("%.2f", o.getPreco()), "Caro"});
+			}
+			
 		}
 	}
+	
+		
+	
+	public void comparar() {
+		for (Orcamento orcamento : OrcamentoProcess.orcamentos) {
+			OrcamentoProcess.calculo(orcamento.getProduto());
+		}
+	}
+
 
 	private void excluir() {
 		if (JOptionPane.showConfirmDialog(this, "Tem certeza que deseja EXCLUIR esse Produto?") == 0) {
 			Orcamento prodTemp = null;
-			for (Orcamento o : OrcamentoProcess.orcamento) {
+			for (Orcamento o : OrcamentoProcess.orcamentos) {
 				if (o.getId() == Integer.parseInt(tfid.getText())) {
 					prodTemp = o;
 				}
 			}
 
-			OrcamentoProcess.orcamento.remove(OrcamentoProcess.orcamento.indexOf(prodTemp));
+			OrcamentoProcess.orcamentos.remove(OrcamentoProcess.orcamentos.indexOf(prodTemp));
 
 			preencherTabela();
 			limparCampos();
@@ -293,6 +312,7 @@ public class OrcamentoForm extends JFrame{
 			create.setEnabled(true);
 			update.setEnabled(false);
 			delete.setEnabled(false);
+			comparar();
 		}
 	}
 		
